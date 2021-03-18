@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            list-style-type: none;
+            box-sizing: border-box;
+            }
+            html {
+                font-size: 62.5%;
+            }
+            main {
+                width: 100%;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+            } 
+            h1 {
+                color: bisque;
+                font-size: 5rem;
+                font-weight: 300;
+                letter-spacing: 1px;
+                text-align: center;
+                text-shadow: 3px 1px 5px rgba(0, 0, 0, 0.52);
+
+            }
+            section {
+                width: 500px;
+                height: 500px;
+                display: flex;
+                flex-wrap: wrap;
+                position: relative;
+
+            }
+            .boarder::after {
+                content: "";
+                position: absolute;
+                width: 90%;
+                height: 4px;
+                background-color: coral;
+                opacity: 0;
+            }
+            .class-1-2-3::after {
+                transform: translateY(-50%);
+                left: 5%;
+                top: 16.5%;
+                opacity: 1;
+            }
+            .class-4-5-6::after {
+                transform: translateY(-50%);
+                left: 5%;
+                top: 50%;
+                opacity: 1;
+            }
+            .class-1-4-7::after {
+                transform: translateY(-50%) rotate(90deg);
+                transform-origin: top left;
+                left: 16.7%;
+                top: 5%;
+                opacity: 1;
+            }
+            .class-2-5-8::after {
+                transform: translateY(-50%) rotate(90deg);
+                transform-origin: top left;
+                left: 50%;
+                top: 5%;
+                opacity: 1;
+            }
+            .class-3-6-9::after {
+                transform: translateY(-50%) rotate(90deg);
+                transform-origin: top left;
+                left: 83.5%;
+                top: 5%;
+                opacity: 1;
+            }
+            .class-1-5-9::after {
+                transform: translateY(-50%) rotate(45deg);
+                transform-origin: top left;
+                left: 5%;
+                top: 5%;
+                width: 130%;
+                opacity: 1;
+            }
+            .class-3-5-7::after {
+                transform: translateY(-50%) rotate(135deg);
+                transform-origin: top left;
+                left: 95%;
+                top: 5%;
+                width: 130%;
+                opacity: 1;
+            }
+            .cell {
+                flex: 33% 0 0;
+                position: relative;
+                cursor: pointer;
+                transition: background-color .3s;
+            }
+            .cell:hover {
+                background-color: rgba(238, 238, 238, 0.3);
+            }
+            .x-class::after {
+                content: "X";
+                position:absolute;
+                top:50%;
+                left:50%;
+                transform: translate(-50%,-50%);
+                font-size: 8rem;
+            }
+            .o-class::after {
+                content: "O";
+                position:absolute;
+                top:50%;
+                left:50%;
+                transform: translate(-50%,-50%);
+                font-size: 8rem;
+            }
+            .cell-1 {
+                border-bottom: 1px solid orchid;
+                border-right: 1px solid orchid;
+            }
+            .cell-2 {
+                border-left: 1px solid orchid;
+                border-right: 1px solid orchid;
+                border-bottom: 1px solid orchid;
+            }
+            .cell-3 {
+                border-bottom: 1px solid orchid;
+                border-left: 1px solid orchid;
+            }
+            .cell-4 {
+                border-bottom: 1px solid orchid;
+                border-right: 1px solid orchid;
+                border-top: 1px solid orchid;
+            }
+            .cell-5 {
+                border: 1px solid orchid;
+            }
+            .cell-6 {
+                border-bottom: 1px solid orchid;
+                border-top: 1px solid orchid;
+                border-left: 1px solid orchid;
+            }
+            .cell-7 {
+                border-top: 1px solid orchid;
+                border-right: 1px solid orchid;
+            }
+            .cell-8 {
+                border-top: 1px solid orchid;
+                border-right: 1px solid orchid;
+                border-left: 1px solid orchid;
+            }
+            .cell-9 {
+                border-top: 1px solid orchid;
+                border-left: 1px solid orchid;
+            }
+            #buttons button {
+                padding: 10px 20px;
+                text-align: center;
+                outline: none;
+                border-radius: 15px;
+                border:1px solid #bbb;
+                background-color: transparent;
+                cursor: pointer;
+                transition: border .3s;
+                text-transform: uppercase;
+            }
+            #buttons button:hover {
+                border: 1px solid bisque;
+            }
+            #buttons {
+                display: flex;
+                justify-content: space-evenly;
+                 width: 500px;
+            }
+            .overlay-index {
+                z-index: 100 !important;
+            }
+            .overlay {
+                top: 0;
+                left: 0;
+                position: absolute;
+                width: 100%;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.6);
+                display: flex;
+                z-index: -1;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                opacity: 0;
+                transition: opacity .3s;
+            }
+            .message {
+                width: 30%;
+                height: auto;
+                text-align: center;
+                padding: 30px;
+                background-color: rgba(255, 255, 255, 0.9);
+            }
+            .close {
+                float: right;
+                color: red;
+                font-size: 1.8rem;
+                cursor: pointer;
+            }
+            .message-p {
+                margin-bottom: 20px;
+                font-size: 3.4rem;
+                clear: both;
+                letter-spacing: 1px;
+            }
+            tr {
+                text-align: center;
+                font-size: 1.4rem;
+            }
+            th {
+                font-size: 1.8rem;  
+            }
+            th,td {
+                padding: 10px;
+            }
+        </style>
+    <title>Kółko i krzyżyk</title>
+</head>
+<body>
+    <main>            
+        <h1>Kółko i krzyżyk</h1>
+        <section class="boarder">
+            <div class="cell cell-1"></div>
+            <div class="cell cell-2"></div>
+            <div class="cell cell-3"></div>
+            <div class="cell cell-4"></div>
+            <div class="cell cell-5"></div>
+            <div class="cell cell-6"></div>
+            <div class="cell cell-7"></div>
+            <div class="cell cell-8"></div>
+            <div class="cell cell-9"></div>    
+        </section>
+        <div class="score">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gracz</th>
+                        <th>Wynik</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>X</td>
+                        <td class="xScore">0</td>
+                    </tr>
+                    <tr>
+                        <td>O</td>
+                        <td class="oScore">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="buttons">
+            <button id="clear">Wyczyść planszę</button>
+            <button id="change">Graj O</button>
+        </div>
+    </main>
+    <div class="overlay">
+        <div class="message">
+            <span class="close">X</span>
+            <p class="message-p"></p>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="./script.js"></script>
+</html>
