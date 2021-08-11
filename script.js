@@ -1,14 +1,24 @@
 let turn = false; // false x - turn true o -turn
+let compSet = false;
 let winingPattern = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]];
 let xTab = [];
 let yTab = [];
 let wining = null;
 let overlay = document.querySelector('.overlay');
 let changeButton = document.querySelector("#change");
+let comp = document.querySelector("#comp");
 let xScore = 0;
 let oScore = 0;
+let compInterval = null;
+let excludedNumber = [];
 
 const reset = () => {
+    document.querySelectorAll('.boarder .cell').forEach(it => {
+        it.classList.remove('x-class');
+        it.classList.remove('o-class');
+    });
+    const classes = document.querySelector('.boarder').className.split(" ").filter(c => !c.startsWith('class-'));
+    document.querySelector('.boarder').className = classes.join(" ").trim();
     xTab = [];
     yTab = [];
     wining = null;
@@ -65,7 +75,7 @@ const calculateWin = (target) => {
             break;
         }
     } 
-
+    excludedNumber.push(number);
     if(!turn) {
         xTab.push(number);
         wining = calculate(xTab);
@@ -79,18 +89,43 @@ const calculateWin = (target) => {
         return;
     }
 }
+const getRandomInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    console.log('excludedNumber',excludedNumber);
+    let number = Math.floor(Math.random() * (max - min)) + min;
+    while(excludedNumber.find(it => it === number) != undefined) {
+        number = Math.floor(Math.random() * (max - min)) + min;
+    }
+    excludedNumber.push(number);
+    return number;
+}
+
+const startComp = () => {
+    if(!turn) {
+       // console.log('Generuje liczbe');
+        let number = getRandomInt(1,9);
+        console.log(number);
+        turn = true;
+    }
+}
 
 document.querySelector('.close').addEventListener('click',(e) => change(0),false);
 overlay.addEventListener('click',(e) => change(0),false);
 
-document.querySelector("#clear").addEventListener('click',(e) => {
-    document.querySelectorAll('.boarder .cell').forEach(it => {
-        it.classList.remove('x-class');
-        it.classList.remove('o-class');
-    });
-    const classes = document.querySelector('.boarder').className.split(" ").filter(c => !c.startsWith('class-'));
-    document.querySelector('.boarder').className = classes.join(" ").trim();
+document.querySelector("#clear").addEventListener('click',(e) => reset(),false);
+
+comp.addEventListener('click',(e) => {
+    compSet = !compSet;
+    document.querySelector("#comp").innerText = compSet ? "Sam ze zobą" : "Graj z komputrem";
     reset();
+    if(compSet) {
+        //console.log('Zaczynam z kompem');
+        compInterval = setInterval(() => startComp(),1000);
+    } else {
+       // console.log('Koncze z kompem');
+        clearInterval(compInterval);
+    }
 },false);
 
 changeButton.addEventListener('click',(e) => {
@@ -104,7 +139,7 @@ document.querySelector(".boarder").addEventListener('click',e => {
 
     if( wining && wining.length == 3 || 
         it.classList.contains('x-class') || 
-        it.classList.contains('x-class')) {
+        it.classList.contains('o-class')) {
         return;
     }
 
