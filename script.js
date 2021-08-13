@@ -43,7 +43,17 @@ const change = (opacity) => {
         overlay.classList.add('overlay-index');
         overlay.style.opacity = "1";
     } else {
-        setTimeout(() => overlay.classList.remove('overlay-index'),300);
+        setTimeout(() => {
+            overlay.classList.remove('overlay-index');
+            if(compSet) {
+                clearInterval(compInterval);
+                excludedNumber = [];
+                setTimeout(() => {
+                    reset();
+                    compInterval = setInterval(() => startComp(),1000); 
+                },1500);
+            }
+        },300);
         overlay.style.opacity = "0";
     }
 }
@@ -67,15 +77,7 @@ const calculate = (sum) => {
     return counter == 3 ? sorted : [];
 }
 
-const calculateWin = (target) => {
-    let number = null;
-    for(let i = 1; i<10;i++) {
-        if(target.classList.contains(`cell-${i}`)) {
-            number = i;
-            break;
-        }
-    } 
-    excludedNumber.push(number);
+const calculateWin = (number) => {
     if(!turn) {
         xTab.push(number);
         wining = calculate(xTab);
@@ -86,6 +88,10 @@ const calculateWin = (target) => {
     if(wining && wining.length == 3) {
         drawLine();
         showMessageWin();
+        if(compSet) {
+            clearInterval(compInterval);
+            excludedNumber = [];
+        }
         return;
     }
 }
@@ -103,10 +109,19 @@ const getRandomInt = (min, max) => {
 
 const startComp = () => {
     if(!turn) {
-       // console.log('Generuje liczbe');
         let number = getRandomInt(1,9);
-        console.log(number);
+        let it = document.querySelector(`.cell-${number}`);
+        it.classList.add('x-class');
+        calculateWin(number);
         turn = true;
+        if(excludedNumber.length === 9) {
+            clearInterval(compInterval);
+            excludedNumber = [];
+            setTimeout(() => {
+                reset();
+                compInterval = setInterval(() => startComp(),1000); 
+            },1500);
+        }
     }
 }
 
@@ -117,13 +132,11 @@ document.querySelector("#clear").addEventListener('click',(e) => reset(),false);
 
 comp.addEventListener('click',(e) => {
     compSet = !compSet;
-    document.querySelector("#comp").innerText = compSet ? "Sam ze zobą" : "Graj z komputrem";
+    document.querySelector("#comp").innerText = compSet ? "Sam ze zobą" : "Graj z AI";
     reset();
     if(compSet) {
-        //console.log('Zaczynam z kompem');
         compInterval = setInterval(() => startComp(),1000);
     } else {
-       // console.log('Koncze z kompem');
         clearInterval(compInterval);
     }
 },false);
@@ -143,13 +156,21 @@ document.querySelector(".boarder").addEventListener('click',e => {
         return;
     }
 
+    let number = null;
+    for(let i = 1; i<10;i++) {
+        if(it.classList.contains(`cell-${i}`)) {
+            number = i;
+            break;
+        }
+    } 
+    excludedNumber.push(number);
     if(!turn) {
         it.classList.add('x-class');
-        calculateWin(it);
+        calculateWin(number);
         turn = true;
     } else {
         it.classList.add('o-class');
-        calculateWin(it);
+        calculateWin(number);
         turn = false; 
     }
 },false);
