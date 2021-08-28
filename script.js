@@ -4,6 +4,7 @@ let winingPattern = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,
 let xTab = [];
 let yTab = [];
 let wining = null;
+let whichAttack = null;
 let overlay = document.querySelector('.overlay');
 let changeButton = document.querySelector("#change");
 let comp = document.querySelector("#comp");
@@ -11,6 +12,59 @@ let xScore = 0;
 let oScore = 0;
 let compInterval = null;
 let excludedNumber = [];
+
+const getPossibleAttack = (number) => {
+    return [1,3,7,9].includes(number) ? "first" : [2,4,6,8].includes(number) ? "second" : "middle";
+}
+let attackFunction = {
+     first() {
+        if(xTab.length === 0) {
+            return [];
+        } else if(xTab.length === 1) {
+            switch(xTab[0]) {
+                case(1):
+                    return [2,5,4/*9*/];
+                case(3):
+                    return [2,5,6/*7*/];
+                case(7):
+                    return [4,5,8/*3*/];
+                case(9):
+                    return [5,6,8/*1*/];
+            }
+        } else if(xTab.length === 2) {
+                let lastNumbers = winingPattern.filter(it => it.includes(xTab[0]) && it.includes(xTab[1]))[0];
+                let notPossibleWiningMove = lastNumbers.filter(it => !excludedNumber.includes(it)).length === 0;
+                return notPossibleWiningMove ? [] : lastNumbers;
+        } else {
+            return [];
+        }
+    },
+    second() {
+        if(xTab.length === 0) {
+            return [];
+        } else if(xTab.length === 1) {
+            switch(xTab[0]) {
+                case(2):
+                    return [1,3,5,8];
+                case(4):
+                    return [1,7,5,6];
+                case(6):
+                    return [3,9,5,3];
+                case(8):
+                    return [7,9,5,2];
+            }
+        } else if(xTab.length === 2) {
+                let lastNumbers = winingPattern.filter(it => it.includes(xTab[0]) && it.includes(xTab[1]))[0];
+                let notPossibleWiningMove = lastNumbers.filter(it => !excludedNumber.includes(it)).length === 0;
+                return notPossibleWiningMove ? [] : lastNumbers;
+        } else {
+            return [];
+        }
+    },
+    middle() {
+        return [];
+    }
+}
 
 const reset = () => {
     document.querySelectorAll('.boarder .cell').forEach(it => {
@@ -98,9 +152,10 @@ const calculateWin = (number) => {
 const getRandomInt = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
-    console.log('excludedNumber',excludedNumber);
     let number = Math.floor(Math.random() * (max - min)) + min;
-    while(excludedNumber.find(it => it === number) != undefined) {
+    whichAttack =  whichAttack === null ? getPossibleAttack(number) : whichAttack;
+    let nextMove = attackFunction[whichAttack]();
+    while(excludedNumber.includes(number) || (nextMove.length !== 0 && !nextMove.includes(number))) {
         number = Math.floor(Math.random() * (max - min)) + min;
     }
     excludedNumber.push(number);
@@ -109,7 +164,7 @@ const getRandomInt = (min, max) => {
 
 const startComp = () => {
     if(!turn) {
-        let number = getRandomInt(1,9);
+        let number = getRandomInt(1,10);
         let it = document.querySelector(`.cell-${number}`);
         it.classList.add('x-class');
         calculateWin(number);
@@ -148,8 +203,9 @@ changeButton.addEventListener('click',(e) => {
 },false);
 
 document.querySelector(".boarder").addEventListener('click',e => {
-    let it = e.target;
+    if(compSet && !turn) return;
 
+    let it = e.target;
     if( wining && wining.length == 3 || 
         it.classList.contains('x-class') || 
         it.classList.contains('o-class')) {
