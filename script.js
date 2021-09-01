@@ -23,20 +23,29 @@ let attackFunction = {
         } else if(xTab.length === 1) {
             switch(xTab[0]) {
                 case(1):
-                    return [2,5,4/*9*/];
+                    return [2,5,4,9];
                 case(3):
-                    return [2,5,6/*7*/];
+                    return [2,5,6,7];
                 case(7):
-                    return [4,5,8/*3*/];
+                    return [4,5,8,3];
                 case(9):
-                    return [5,6,8/*1*/];
+                    return [5,6,8,1];
             }
         } else if(xTab.length === 2) {
+                let opositeNumber = xTab.every(it => it === 9 || it === 7 || it === 3 || it === 1);
+                if(opositeNumber && !excludedNumber.includes(5)) {
+                    return [5];
+                }
+                if(opositeNumber) {
+                    /* defence here */
+                    return [1,3,7,9];
+                }
                 let lastNumbers = winingPattern.filter(it => it.includes(xTab[0]) && it.includes(xTab[1]))[0];
                 let notPossibleWiningMove = lastNumbers.filter(it => !excludedNumber.includes(it)).length === 0;
-                return notPossibleWiningMove ? [] : lastNumbers;
+                return notPossibleWiningMove ? [] /* defence here */ : lastNumbers;
         } else {
-            return [];
+            let opositeNumber = xTab.every(it => it === 9 || it === 7 || it === 3 || it === 1);
+            return opositeNumber ? [...winingPattern.filter(it => it.includes(xTab[0]) && it.includes(xTab[1] && it.includes(xTab[2])))] : [];
         }
     },
     second() {
@@ -62,7 +71,11 @@ let attackFunction = {
         }
     },
     middle() {
-        return [];
+        if(xTab.length === 0 || xTab.length === 1) {
+            return [];
+        } else {
+            return[]; //TODO
+        }
     }
 }
 
